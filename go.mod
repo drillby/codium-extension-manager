@@ -1,3 +1,3 @@
-module github.com/drillby/codium-local-extension-manager
+module github.com/drillby/codium-extension-manager
 
 go 1.21.3

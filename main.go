@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/drillby/codium-local-extension-manager/http_requester"
+	"github.com/drillby/codium-extension-manager/http_requester"
 )
 
 func main() {
