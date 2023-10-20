@@ -3,10 +3,29 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/drillby/codium-extension-manager/http_requester"
 )
+
+type Extension struct {
+	Results []struct {
+		Extensions []struct {
+			Publisher struct {
+				PublisherName string `json:"displayName"`
+			} `json:"publisher"`
+			ExtensionName string `json:"displayName"`
+			Versions      []struct {
+				Version string `json:"version"`
+				Files   []struct {
+					AssetType string `json:"assetType"`
+					Source    string `json:"source"`
+				} `json:"files"`
+			} `json:"versions"`
+		} `json:"extensions"`
+	} `json:"results"`
+}
 
 func main() {
 	url := "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery?api-version=7.2-preview.1"
@@ -47,6 +66,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println(res)
+	var extension Extension
+	err = json.Unmarshal(res, &extension)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	fmt.Print(extension.Results[0].Extensions[0].Versions[0].Files[0].Source)
 }
