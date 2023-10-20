@@ -38,14 +38,14 @@ func GetRequest(url string, headers map[string]string, timeout int8) (string, er
 	return string(respBody), nil
 }
 
-func PostRequest(url string, headers map[string]string, body io.Reader, timeout int8) (string, error) {
+func PostRequest(url string, headers map[string]string, body io.Reader, timeout int8) ([]byte, error) {
 	if timeout < 0 {
-		return "", errors.New("timeout must be greater than 0, got: " + fmt.Sprint(timeout) + " instead")
+		return nil, errors.New("timeout must be greater than 0, got: " + fmt.Sprint(timeout) + " instead")
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	for key, value := range headers {
@@ -56,14 +56,14 @@ func PostRequest(url string, headers map[string]string, body io.Reader, timeout 
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(respBody), nil
+	return respBody, nil
 }
