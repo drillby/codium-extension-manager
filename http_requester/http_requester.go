@@ -96,5 +96,11 @@ func PostRequest(url string, headers map[string]string, body io.Reader, timeout 
 		return Extension{}, err
 	}
 
+	const errResponse = "{\"results\":[{\"extensions\":[],\"pagingToken\":null,\"resultMetadata\":[{\"metadataType\":\"ResultCount\",\"metadataItems\":[{\"name\":\"TotalCount\",\"count\":0}]}]}]}"
+
+	if string(respBody) == errResponse {
+		return Extension{}, errors.New("extension not found")
+	}
+
 	return extension, nil
 }

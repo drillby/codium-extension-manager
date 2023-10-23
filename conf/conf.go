@@ -1,6 +1,9 @@
 package conf
 
-import ("os")
+import (
+	"os"
+	"path"
+)
 
 const Url = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery?api-version=7.2-preview.1"
 
@@ -30,4 +33,4 @@ var Payload = map[string]interface{}{
 	"flags": 2151,
 }
 
-var ExtensionsDir = os.Getenv("HOME") + "/.codium/extensions"
+var ExtensionDir = path.Join(os.Getenv("HOME"), ".codium", "extensions")
