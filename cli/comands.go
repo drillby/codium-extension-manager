@@ -29,7 +29,7 @@ var DownloadExtension = Comand{
 
 		extensionToDwnld := strings.Split(args[0], "@")
 		if len(extensionToDwnld) != 2 {
-			fmt.Println("Usage: cem download <extension_nameextension_name@version>")
+			fmt.Println("Usage: cem download <extension_name@version>")
 			os.Exit(1)
 		}
 
