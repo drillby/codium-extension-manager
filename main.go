@@ -24,6 +24,8 @@ func main() {
 
 	app.AddComand(cli.ListExtensions)
 	app.AddComand(cli.DownloadExtension)
+	app.AddComand(cli.UninstallExtension)
+	app.AddComand(cli.UpdateExtensions)
 
 	app.Run(args)
 
