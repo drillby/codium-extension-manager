@@ -1,6 +1,7 @@
 package http_requester
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -8,14 +9,32 @@ import (
 	"time"
 )
 
-func GetRequest(url string, headers map[string]string, timeout int8) (string, error) {
+type Extension struct {
+	Results []struct {
+		Extensions []struct {
+			Publisher struct {
+				PublisherName string `json:"displayName"`
+			} `json:"publisher"`
+			ExtensionName string `json:"displayName"`
+			Versions      []struct {
+				Version string `json:"version"`
+				Files   []struct {
+					AssetType string `json:"assetType"`
+					Source    string `json:"source"`
+				} `json:"files"`
+			} `json:"versions"`
+		} `json:"extensions"`
+	} `json:"results"`
+}
+
+func GetRequest(url string, headers map[string]string, timeout int8) (Extension, error) {
 	if timeout < 0 {
-		return "", errors.New("timeout must be greater than 0, got: " + fmt.Sprint(timeout) + " instead")
+		return Extension{}, errors.New("timeout must be greater than 0, got: " + fmt.Sprint(timeout) + " instead")
 	}
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return "", err
+		return Extension{}, err
 	}
 
 	for key, value := range headers {
@@ -26,26 +45,32 @@ func GetRequest(url string, headers map[string]string, timeout int8) (string, er
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		return Extension{}, err
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return Extension{}, err
 	}
 
-	return string(respBody), nil
+	var extension Extension
+	err = json.Unmarshal(respBody, &extension)
+	if err != nil {
+		return Extension{}, err
+	}
+
+	return extension, nil
 }
 
-func PostRequest(url string, headers map[string]string, body io.Reader, timeout int8) ([]byte, error) {
+func PostRequest(url string, headers map[string]string, body io.Reader, timeout int8) (Extension, error) {
 	if timeout < 0 {
-		return nil, errors.New("timeout must be greater than 0, got: " + fmt.Sprint(timeout) + " instead")
+		return Extension{}, errors.New("timeout must be greater than 0, got: " + fmt.Sprint(timeout) + " instead")
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
-		return nil, err
+		return Extension{}, err
 	}
 
 	for key, value := range headers {
@@ -56,14 +81,20 @@ func PostRequest(url string, headers map[string]string, body io.Reader, timeout 
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return Extension{}, err
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return Extension{}, err
 	}
 
-	return respBody, nil
+	var extension Extension
+	err = json.Unmarshal(respBody, &extension)
+	if err != nil {
+		return Extension{}, err
+	}
+
+	return extension, nil
 }
